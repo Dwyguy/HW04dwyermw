@@ -10,7 +10,12 @@ dwyermwStarbucks::~dwyermwStarbucks(void)
 {
 }
 
-dwyermwStarbucks::void build(Entry* c, int n)
+void dwyermwStarbucks::build(Entry* c, int n)
 {
 
+}
+
+Entry* dwyermwStarbucks::getNearest(double x, double y)
+{
+	return NULL;
 }
