@@ -1,7 +1,7 @@
 #include "dwyermwStarbucks.h"
 
 
-dwyermwStarbucks::dwyermwStarbucks(void)
+dwyermwStarbucks::dwyermwStarbucks()
 {
 }
 

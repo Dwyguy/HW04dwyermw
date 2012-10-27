@@ -3,6 +3,7 @@
 #include <fstream>
 #include <iostream>
 #include "Starbucks.h"
+#include "dwyermwStarbucks.h"
 
 
 using namespace ci;
@@ -15,14 +16,20 @@ class HW04dwyermwApp : public AppBasic {
 	void mouseDown( MouseEvent event );	
 	void update();
 	void draw();
+
+private:
+	dwyermwStarbucks star = new dwyermwStarbucks;
 };
 
 void HW04dwyermwApp::setup()
 {
 	ifstream in("Starbucks_2006.csv");
 	vector <Entry> storage;
+	
 	string line;
 	double d;
+	double d2;
+	char separator;
 	int x = 0;
 	
 	while(in.good())
@@ -30,13 +37,26 @@ void HW04dwyermwApp::setup()
 		Entry* e = new Entry;
 		storage.push_back(*e);
 		getline(in, line, ',');
+		
 		storage[x].identifier = line;
 		in >> d;
 		storage[x].x = d;
-		in >> d;
-		storage[x].y = d;
-		//console() << line;
+		in >> separator; // Gets the separator
+		in >> d2;
+		storage[x].y = d2;
+		x++;
+		console() << line;
 	}
+
+	// Shuffles vector to make it random
+	std::random_shuffle(storage.begin(), storage.end());
+	Entry* locs = new Entry[storage.size()];
+	
+	// Copies all values from the vector to the array
+	for(int y = 0; y < storage.size(); y++)
+		locs[y] = storage[y];
+
+	star.build(locs, storage.size());
 
 }
 
