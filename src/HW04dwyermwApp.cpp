@@ -48,8 +48,6 @@ void HW04dwyermwApp::setup()
 		console() << line;
 	}
 
-	// Shuffles vector to make it random
-	std::random_shuffle(storage.begin(), storage.end());
 	Entry* locs = new Entry[storage.size()];
 	
 	// Copies all values from the vector to the array
