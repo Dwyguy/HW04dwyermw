@@ -12,9 +12,7 @@ public:
 
 	void build(Entry* c, int n);
 	Entry* getNearest(double x, double y);
-	Node* root;
-
-private:
+	//Node* root;
 	
 };
 

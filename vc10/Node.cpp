@@ -76,7 +76,7 @@ Entry* Node::search(Entry* key, Node* r, bool isXlevel)
 	}
 
 
-
+	return NULL;
 	/*if(key == r->key)
 		return r->key;
 	if(key < r->key)

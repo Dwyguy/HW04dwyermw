@@ -18,11 +18,12 @@ class HW04dwyermwApp : public AppBasic {
 	void draw();
 
 private:
-	dwyermwStarbucks star = new dwyermwStarbucks;
+	dwyermwStarbucks* star;
 };
 
 void HW04dwyermwApp::setup()
 {
+	star = new dwyermwStarbucks();
 	ifstream in("Starbucks_2006.csv");
 	vector <Entry> storage;
 	
@@ -54,7 +55,7 @@ void HW04dwyermwApp::setup()
 	for(int y = 0; y < storage.size(); y++)
 		locs[y] = storage[y];
 
-	star.build(locs, storage.size());
+	star->build(locs, storage.size());
 
 }
 
