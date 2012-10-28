@@ -17,10 +17,20 @@ Node* Node::insert(Entry* e, Node* r, bool isXlevel)
 		return new Node(e);
 	if(r->key == e)
 		return r;
-	if(e < r->key)
-		r->left = insert(e, r->left, !isXlevel);
+	if(isXlevel)
+	{
+		if(e->x < r->key->x)
+			r->left = insert(e, r->left, !isXlevel);
+		else
+			r->right = insert(e, r->right, !isXlevel);
+	}
 	else
-		r->right = insert(e, r->right, !isXlevel);
+	{
+		if(e->y < r->key->y)
+			r->left = insert(e, r->left, !isXlevel);
+		else
+			r->right = insert(e, r->right, !isXlevel);
+	}
 
 	return r;
 }
