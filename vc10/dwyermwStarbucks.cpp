@@ -110,10 +110,13 @@ Entry* dwyermwStarbucks::getNearest(double x, double y)
 	base->y = y;
 
 	Entry* e = root->search(base, root, true);
+	Node* finalEntry = root->getFinalEntry();
 
 	// Find the two closest nodes to the node found
-	Node* node_prev = root->previous(e, root);
-	Node* node_next = root->next(e, root);
+	// Currently don't work, as I'm just sending in the root
+	// So I guess they do work, but it's a semantic problem
+	Node* node_prev = root->previous(finalEntry, true);
+	Node* node_next = root->next(finalEntry, true);
 
 	Entry* e_prev = node_prev->key;
 	Entry* e_next = node_next->key;

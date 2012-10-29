@@ -24,7 +24,7 @@ private:
 void HW04dwyermwApp::setup()
 {
 	star = new dwyermwStarbucks();
-	Entry* e = star->getNearest(0.5, 0.5);
+	Entry* e = star->getNearest(0.2, 0.2);
 	console() << "Identifier = " << e->identifier << ", X = " << e->x << ", Y = " << e->y;
 	system("PAUSE");
 	//cout << cin << endl;

@@ -8,11 +8,14 @@ public:
 	~Node(void);
 	Node* insert(Entry* e, Node* r, bool isXlevel);
 	Entry* search(Entry* key, Node* r, bool isXlevel);
-	Node* next(Entry* key, Node* r);
-	Node* previous(Entry* key, Node* r);
+	Node* next(Node* r, bool firstTime);
+	Node* previous(Node* r, bool firstTime);
+	Node* getFinalEntry();
 
 	Entry* key;
 	Node* left;
 	Node* right;
+	Node* finalEntry;
+	Node* parent;
 };
 

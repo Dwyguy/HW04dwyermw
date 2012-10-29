@@ -71,16 +71,28 @@ Entry* Node::search(Entry* key, Node* r, bool isXlevel)
 		if(key->x <= r->key->x)
 		{
 			if(r->left == NULL) // If there is no left node, the current node is the closest location
+			{
 				closest = r->key;
+				finalEntry = r;
+			}
 			else
+			{
+				parent = r;
 				closest = search(key, r->left, !isXlevel);
+			}
 		}
 		else
 		{
 			if(r->right == NULL)
+			{
 				closest = r->key;
+				finalEntry = r;
+			}
 			else
+			{
+				parent = r;
 				closest = search(key, r->right, !isXlevel);
+			}
 		}
 	}
 	else
@@ -88,26 +100,52 @@ Entry* Node::search(Entry* key, Node* r, bool isXlevel)
 		if(key->y <= r->key->y)
 		{
 			if(r->left == NULL)
+			{
 				closest = r->key;
+				finalEntry = r;
+			}
 			else
+			{
+				parent = r;
 				closest = search(key, r->left, !isXlevel);
+			}
 		}
 		else
 		{
 			if(r->right == NULL)
+			{
 				closest = r->key;
+				finalEntry = r;
+			}
 			else
+			{
+				parent = r;
 				closest= search(key, r->right, !isXlevel);
+			}
 		}
 	}
-
 
 	return closest;
 }
 
-Node* Node::next(Entry* key, Node* r)
+Node* Node::next(Node* r, bool firstTime)
 {
-	if(r == NULL)
+	Node* next_node;
+
+	if(r->right == NULL && r->left != NULL)
+		return parent;
+
+	if(r->right->left != NULL && firstTime)
+		next_node = next(r->right, false);
+	else if(r->left != NULL)
+		next_node = next(r->left, false);
+	else
+		next_node = r->right;
+
+	return next_node;
+
+	// Original method, which did not work well at all
+	/*if(r == NULL)
 		return NULL;
 	else if(key > r->key)
 		return next(key, r->right);
@@ -118,15 +156,30 @@ Node* Node::next(Entry* key, Node* r)
 			return r;
 		else
 			return temp;
-	}
+	}*/
 }
 
-Node* Node::previous(Entry* key, Node* r)
+Node* Node::previous(Node* r, bool firstTime)
 {
-	if(r == NULL)
+	Node* prev_node;
+
+	if(r->left == NULL && r->right != NULL)
+		return parent;
+
+	if(r->left->right != NULL && firstTime)
+		prev_node = next(r->left, false);
+	else if(r->right != NULL)
+		prev_node = next(r->right, false);
+	else
+		prev_node = r->left;
+
+	return prev_node;
+
+	// Original method, which sort of worked
+	/*if(r == NULL)
 		return NULL;
 	else if(key < r->key)
-		return previous(key, r->left);
+		return r;//return previous(key, r->left);
 	else
 	{
 		Node* temp = previous(key, r->right);
@@ -134,5 +187,10 @@ Node* Node::previous(Entry* key, Node* r)
 			return r;
 		else
 			return temp;
-	}
+	}*/
+}
+
+Node* Node::getFinalEntry()
+{
+	return finalEntry;
 }
