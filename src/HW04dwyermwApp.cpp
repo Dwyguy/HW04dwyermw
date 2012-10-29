@@ -1,3 +1,18 @@
+/**
+* @file HW04dwyermwApp.cpp
+* CSE 274 - Fall 2012
+* My solution for HW04
+*
+* @author Matthew Dwyer
+* @date 10/29/12
+*
+* @note This file is (c) 2012. It is licensed under the
+* CC BY 3.0 license (http://creativecommons.org/licenses/by/3.0/),
+* which means you are free to use, share, and remix it as long as you
+* give attribution. Commercial uses are allowed.
+*
+*/
+
 #include "cinder/app/AppBasic.h"
 #include "cinder/gl/gl.h"
 #include <fstream>
@@ -18,6 +33,8 @@ class HW04dwyermwApp : public AppBasic {
 	void draw();
 
 private:
+	// A dwyermwStarbucks object, which allows for the data to be loaded,
+	// the structure to be built, and the nearest locaiton to be found.
 	dwyermwStarbucks* star;
 };
 

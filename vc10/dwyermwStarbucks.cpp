@@ -20,9 +20,10 @@ dwyermwStarbucks::dwyermwStarbucks()
 	char separator;
 	int x = 0;
 	
+	// Reads in all values from the .csv file
 	while(in.good())
 	{
-		Entry* e = new Entry(); // If things are going wrong, remove parentheses
+		Entry* e = new Entry();
 		storage.push_back(*e);
 		getline(in, line, ',');
 		
@@ -42,13 +43,10 @@ dwyermwStarbucks::dwyermwStarbucks()
 	for(int y = 0; y < storage.size(); y++)
 		locs[y] = storage[y];
 
+	// Builds the binary tree
 	build(locs, storage.size());
 }
 
-
-dwyermwStarbucks::~dwyermwStarbucks(void)
-{
-}
 
 void dwyermwStarbucks::build(Entry* c, int n)
 {
@@ -62,7 +60,7 @@ void dwyermwStarbucks::build(Entry* c, int n)
 
 	// Check for duplicate locations.  A duplicate location is defined as
 	// both the x and y values of the compared locations being within
-	// 0.0001 of one another
+	// 0.00001 of one another
 	for(int a = 0; a < storage.size(); a++)
 	{
 		for(int b = a + 1; b < storage.size(); b++)
@@ -85,6 +83,7 @@ void dwyermwStarbucks::build(Entry* c, int n)
 		locs[y] = storage[y];
 
 	Node* r = NULL;
+
 	// Building the K-D tree
 	for(int p = 0; p < storage.size(); p++)
 	{
@@ -96,9 +95,6 @@ void dwyermwStarbucks::build(Entry* c, int n)
 		}
 		else
 			r->insert(&locs[p], r, true);
-
-		/*if(p == storage.size() - 1)
-			int y = 1;*/
 	}
 
 }
@@ -114,9 +110,10 @@ Entry* dwyermwStarbucks::getNearest(double x, double y)
 
 	// Find the two closest nodes to the node found
 	// Can sometimes lead to spotty results, but catches
-	// the closer location occasionally.  For accuracy purposes,
+	// the closer location sometimes.  For accuracy purposes,
 	// I feel it's ok to leave these here.  I do not believe it
-	// affects runtime in a drastic way.
+	// affects runtime in a drastic way.  Can also be removed
+	// with little loss of accuracy (comparatively)
 	Node* node_prev = root->previous(finalEntry, true);
 	Node* node_next = root->next(finalEntry, true);
 
@@ -127,6 +124,7 @@ Entry* dwyermwStarbucks::getNearest(double x, double y)
 	double dist2 = sqrt(pow(x - e_prev->x, 2) + pow(y - e_prev->y, 2));
 	double dist3 = sqrt(pow(x - e_next->x, 2) + pow(y - e_next->y, 2));
 
+	// Finds the shortest of the three distances and returns them
 	double min_dist = min(dist1, dist2);
 	min_dist = min(min_dist, dist3);
 
