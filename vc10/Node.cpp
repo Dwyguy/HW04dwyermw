@@ -4,6 +4,8 @@
 Node::Node(Entry* e)
 {
 	key = e;
+	left = NULL;
+	right = NULL;
 }
 
 
@@ -20,16 +22,36 @@ Node* Node::insert(Entry* e, Node* r, bool isXlevel)
 	if(isXlevel)
 	{
 		if(e->x <= r->key->x)
-			r->left = insert(e, r->left, !isXlevel);
-		else
-			r->right = insert(e, r->right, !isXlevel);
+		{
+			if(r->left != NULL)
+				r->left = insert(e, r->left, !isXlevel);
+			else
+				r->left = new Node(e);
+		}
+		else if(e->x > r->key->x)
+		{
+			if(r->right != NULL)
+				r->right = insert(e, r->right, !isXlevel);
+			else
+				r->right = new Node(e);
+		}
 	}
 	else
 	{
 		if(e->y <= r->key->y)
-			r->left = insert(e, r->left, !isXlevel);
-		else
-			r->right = insert(e, r->right, !isXlevel);
+		{
+			if(r->left != NULL)
+				r->left = insert(e, r->left, !isXlevel);
+			else
+				r->left = new Node(e);
+		}
+		else if(e->y > r->key->y)
+		{
+			if(r->right != NULL)
+				r->right = insert(e, r->right, !isXlevel);
+			else
+				r->right = new Node(e);
+		}
 	}
 
 	return r;

@@ -64,10 +64,16 @@ void dwyermwStarbucks::build(Entry* c, int n)
 	// both the x and y values of the compared locations being within
 	// 0.0001 of one another
 	for(int a = 0; a < storage.size(); a++)
+	{
 		for(int b = a + 1; b < storage.size(); b++)
+		{
 			if(abs(storage[a].x - storage[b].x) <= 0.0001)
+			{
 				if(abs(storage[a].y - storage[b].y) <= 0.0001)
 					storage.erase(storage.begin() + a);
+			}
+		}
+	}
 
 	// Shuffles vector to make it random
 	std::random_shuffle(storage.begin(), storage.end());
@@ -78,14 +84,21 @@ void dwyermwStarbucks::build(Entry* c, int n)
 	for(int y = 0; y < storage.size(); y++)
 		locs[y] = storage[y];
 
-	Node* r;
+	Node* r = NULL;
 	// Building the K-D tree
 	for(int p = 0; p < storage.size(); p++)
 	{
-		//root = new Node(&locs[p]);
-		r = r->insert(&locs[p], r, true);
+		// First time through, gets the root node.  Then builds off that
 		if(p == 0)
+		{
+			r = r->insert(&locs[p], r, true);
 			root = r; // root now points to the root node of the k-d tree
+		}
+		else
+			r->insert(&locs[p], r, true);
+
+		if(p == storage.size() - 1)
+			int y = 1;
 	}
 
 }
