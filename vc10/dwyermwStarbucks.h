@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include "Starbucks.h"
+#include "Node.h"
 using namespace std;
 
 
@@ -12,8 +13,7 @@ public:
 
 	void build(Entry* c, int n);
 	Entry* getNearest(double x, double y);
-	
-	Entry* locs[];
+	Node* root;
 	
 };
 

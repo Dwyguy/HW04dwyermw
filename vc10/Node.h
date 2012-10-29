@@ -11,7 +11,6 @@ public:
 	Node* next(Entry* key, Node* r);
 	Node* previous(Entry* key, Node* r);
 
-private:
 	Entry* key;
 	Node* left;
 	Node* right;

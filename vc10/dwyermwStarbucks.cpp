@@ -78,17 +78,43 @@ void dwyermwStarbucks::build(Entry* c, int n)
 	for(int y = 0; y < storage.size(); y++)
 		locs[y] = storage[y];
 
-	Node* root;
+	Node* r;
 	// Building the K-D tree
 	for(int p = 0; p < storage.size(); p++)
 	{
 		//root = new Node(&locs[p]);
-		root = root->insert(&locs[p], root, true);
+		r = r->insert(&locs[p], r, true);
+		if(p == 0)
+			root = r; // root now points to the root node of the k-d tree
 	}
 
 }
 
 Entry* dwyermwStarbucks::getNearest(double x, double y)
 {
-	return NULL;
+	Entry* base = new Entry();
+	base->x = x;
+	base->y = y;
+
+	Entry* e = root->search(base, root, true);
+
+	Node* node_prev = root->previous(e, root);
+	Node* node_next = root->next(e, root);
+
+	Entry* e_prev = node_prev->key;
+	Entry* e_next = node_next->key;
+
+	double dist1 = sqrt(pow(x - e->x, 2) + pow(y - e->y, 2));
+	double dist2 = sqrt(pow(x - e_prev->x, 2) + pow(y - e_prev->y, 2));
+	double dist3 = sqrt(pow(x - e_next->x, 2) + pow(y - e_next->y, 2));
+
+	double min_dist = min(dist1, dist2);
+	min_dist = min(min_dist, dist3);
+
+	if(min_dist == dist1)
+		return e;
+	else if(min_dist == dist2)
+		return e_prev;
+	else
+		return e_next;
 }
