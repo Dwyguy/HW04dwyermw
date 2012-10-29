@@ -44,17 +44,17 @@ Entry* Node::search(Entry* key, Node* r, bool isXlevel)
 	{
 		if(key->x <= r->key->x)
 		{
-			if(r->left == NULL)
+			if(r->left == NULL) // If there is no left node, the current node is the closest location
 				return r->key;
 			else
-				search(key, r->left, !isXlevel);
+				return search(key, r->left, !isXlevel);
 		}
 		else
 		{
 			if(r->right == NULL)
 				return r->key;
 			else
-				search(key, r->right, !isXlevel);
+				return search(key, r->right, !isXlevel);
 		}
 	}
 	else
@@ -64,26 +64,17 @@ Entry* Node::search(Entry* key, Node* r, bool isXlevel)
 			if(r->right == NULL)
 				return r->key;
 			else
-				search(key, r->left, !isXlevel);
+				return search(key, r->left, !isXlevel);
 		}
 		else
 		{
 			if(r->right == NULL)
 				return r->key;
 			else
-				search(key, r->right, !isXlevel);
+				return search(key, r->right, !isXlevel);
 		}
 	}
 
 
 	return NULL;
-	/*if(key == r->key)
-		return r->key;
-	if(key < r->key)
-		Entry* best_left = search(key, r->left, !isXlevel);
-	else
-		Entry* best_right = search(key, r->right, !isXlevel);
-
-	Entry* cur_entry = r->key;*/
-
 }
