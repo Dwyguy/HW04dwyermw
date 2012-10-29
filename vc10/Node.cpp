@@ -64,7 +64,10 @@ Entry* Node::search(Entry* key, Node* r, bool isXlevel)
 		return NULL;
 
 	if(key->x == r->key->x && key->y == r->key->y)
-		return key;
+	{
+		finalEntry = r;
+		return r->key;
+	}
 
 	if(isXlevel)
 	{
@@ -134,6 +137,11 @@ Node* Node::next(Node* r, bool firstTime)
 
 	if(r->right == NULL && r->left != NULL)
 		return parent;
+	// This decreases accuracy, however, I ran out of time to implement
+	// a good work around.  This is a quick fix that allows problems to
+	// be bypassed.
+	if(r->right == NULL && r->left == NULL)
+		return parent;
 
 	if(r->right->left != NULL && firstTime)
 		next_node = next(r->right, false);
@@ -164,6 +172,11 @@ Node* Node::previous(Node* r, bool firstTime)
 	Node* prev_node;
 
 	if(r->left == NULL && r->right != NULL)
+		return parent;
+	// This decreases accuracy, however, I ran out of time to implement
+	// a good work around.  This is a quick fix that allows problems to
+	// be bypassed.
+	if(r->left == NULL && r->right == NULL)
 		return parent;
 
 	if(r->left->right != NULL && firstTime)
