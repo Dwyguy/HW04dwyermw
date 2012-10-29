@@ -24,8 +24,10 @@ private:
 void HW04dwyermwApp::setup()
 {
 	star = new dwyermwStarbucks();
-	
-	cout << "x";
+	Entry* e = star->getNearest(0.5, 0.5);
+	console() << "Identifier = " << e->identifier << ", X = " << e->x << ", Y = " << e->y;
+	system("PAUSE");
+	//cout << cin << endl;
 }
 
 void HW04dwyermwApp::mouseDown( MouseEvent event )

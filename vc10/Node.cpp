@@ -59,46 +59,50 @@ Node* Node::insert(Entry* e, Node* r, bool isXlevel)
 
 Entry* Node::search(Entry* key, Node* r, bool isXlevel)
 {
+	Entry* closest;
 	if(r == NULL)
 		return NULL;
+
+	if(key->x == r->key->x && key->y == r->key->y)
+		return key;
 
 	if(isXlevel)
 	{
 		if(key->x <= r->key->x)
 		{
 			if(r->left == NULL) // If there is no left node, the current node is the closest location
-				return r->key;
+				closest = r->key;
 			else
-				search(key, r->left, !isXlevel);
+				closest = search(key, r->left, !isXlevel);
 		}
 		else
 		{
 			if(r->right == NULL)
-				return r->key;
+				closest = r->key;
 			else
-				search(key, r->right, !isXlevel);
+				closest = search(key, r->right, !isXlevel);
 		}
 	}
 	else
 	{
 		if(key->y <= r->key->y)
 		{
-			if(r->right == NULL)
-				return r->key;
+			if(r->left == NULL)
+				closest = r->key;
 			else
-				search(key, r->left, !isXlevel);
+				closest = search(key, r->left, !isXlevel);
 		}
 		else
 		{
 			if(r->right == NULL)
-				return r->key;
+				closest = r->key;
 			else
-				search(key, r->right, !isXlevel);
+				closest= search(key, r->right, !isXlevel);
 		}
 	}
 
 
-	return NULL;
+	return closest;
 }
 
 Node* Node::next(Entry* key, Node* r)

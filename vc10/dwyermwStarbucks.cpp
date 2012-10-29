@@ -67,9 +67,9 @@ void dwyermwStarbucks::build(Entry* c, int n)
 	{
 		for(int b = a + 1; b < storage.size(); b++)
 		{
-			if(abs(storage[a].x - storage[b].x) <= 0.0001)
+			if(abs(storage[a].x - storage[b].x) <= 0.00001)
 			{
-				if(abs(storage[a].y - storage[b].y) <= 0.0001)
+				if(abs(storage[a].y - storage[b].y) <= 0.00001)
 					storage.erase(storage.begin() + a);
 			}
 		}
@@ -97,8 +97,8 @@ void dwyermwStarbucks::build(Entry* c, int n)
 		else
 			r->insert(&locs[p], r, true);
 
-		if(p == storage.size() - 1)
-			int y = 1;
+		/*if(p == storage.size() - 1)
+			int y = 1;*/
 	}
 
 }
@@ -111,6 +111,7 @@ Entry* dwyermwStarbucks::getNearest(double x, double y)
 
 	Entry* e = root->search(base, root, true);
 
+	// Find the two closest nodes to the node found
 	Node* node_prev = root->previous(e, root);
 	Node* node_next = root->next(e, root);
 
