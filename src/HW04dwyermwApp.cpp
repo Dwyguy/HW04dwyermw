@@ -19,6 +19,9 @@
 #include <iostream>
 #include "Starbucks.h"
 #include "dwyermwStarbucks.h"
+#include "Resources.h"
+#include "cinder/gl/Texture.h"
+#include "cinder\ImageIo.h"
 
 
 using namespace ci;
@@ -31,15 +34,31 @@ class HW04dwyermwApp : public AppBasic {
 	void mouseDown( MouseEvent event );	
 	void update();
 	void draw();
+	void prepareSettings(Settings* settings);
+	gl::Texture* myTexture_;
 
 private:
 	// A dwyermwStarbucks object, which allows for the data to be loaded,
 	// the structure to be built, and the nearest locaiton to be found.
 	dwyermwStarbucks* star;
+	Surface* mySurface_;
+	
+	gl::Texture* picture_;
+
+	static const int appHeight = 600;
+	static const int appWidth = 800;
+	static const int surfaceSize = 1024;
 };
+
+void HW04dwyermwApp::prepareSettings(Settings* settings)
+{
+	(*settings).setWindowSize(appWidth, appHeight);
+	(*settings).setResizable(false);
+}
 
 void HW04dwyermwApp::setup()
 {
+	mySurface_ = new Surface(surfaceSize, surfaceSize, false);
 	star = new dwyermwStarbucks();
 	Entry* e = star->getNearest(0.0, 0.0);
 	console() << "Identifier = " << e->identifier << ", X = " << e->x << ", Y = " << e->y;
@@ -63,7 +82,7 @@ void HW04dwyermwApp::setup()
 	console() << "Identifier = " << e9->identifier << ", X = " << e9->x << ", Y = " << e9->y;
 	Entry* e10 = star->getNearest(1.0, 1.0);
 	console() << "Identifier = " << e10->identifier << ", X = " << e10->x << ", Y = " << e10->y;
-	system("PAUSE");
+	//system("PAUSE");
 	//cout << cin << endl;
 }
 
@@ -73,12 +92,15 @@ void HW04dwyermwApp::mouseDown( MouseEvent event )
 
 void HW04dwyermwApp::update()
 {
+	//(*myTexture_).update(*mySurface_,(*mySurface_).getBounds());
 }
 
 void HW04dwyermwApp::draw()
 {
-	// clear out the window with black
-	gl::clear( Color( 0, 0, 0 ) ); 
+	//gl::draw(*mySurface_);
+	//gl::draw(*myTexture_);
+	gl::Texture picture( loadImage( loadResource( RES_IMG) ) );
+	gl::draw(picture);
 }
 
 CINDER_APP_BASIC( HW04dwyermwApp, RendererGl )
