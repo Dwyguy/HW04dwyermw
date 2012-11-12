@@ -39,6 +39,7 @@ class HW04dwyermwApp : public AppBasic {
 	void drawPoint(Node* r);
 	void clearSurface();
 	void censusDataReader();
+	void drawCensusPoint(double x, double y);
 
 private:
 	// A dwyermwStarbucks object, which allows for the data to be loaded,
@@ -46,6 +47,8 @@ private:
 	dwyermwStarbucks* star;
 	Surface* mySurface_;
 	uint8_t* pixels;
+	vector<CensusEntry> storage2000;
+	vector<CensusEntry> stroage 2010;
 
 	//gl::Texture* picture_;
 
@@ -70,17 +73,14 @@ void HW04dwyermwApp::setup()
 	pixels = (*mySurface_).getData();
 	clearSurface();
 	drawPoint(star->root);
-	
-	// Create loop in here that reads in all data from the tree, and puts it into a list of locations to
-	// draw on the picture.  Preferably a 2-d array.
 }
 
 void HW04dwyermwApp::censusDataReader()
 {
+	// Read in Census 2000 data
 	ifstream in("Census_2000.csv");
 
-	vector<CensusEntry> storage;
-	char seperator;
+	char separator;
 	int d;
 	int pop = 0; // Population
 	int xPop = 0; // X coordinate of population
@@ -90,20 +90,79 @@ void HW04dwyermwApp::censusDataReader()
 	while(in.good())
 	{
 		in >> d;
-		in >> seperator;
+		in >> separator;
 		in >> d;
-		in >> seperator;
+		in >> separator;
 		in >> d;
-		in >> seperator;
-		in >> d;
-		in >> seperator; // Gets past the first four columns
+		in >> separator;
 
 		CensusEntry* e = new CensusEntry();
-		storage.push_back(*e);
+		storage2000.push_back(*e);
+
+		in >> d;
+		storage2000[count].blockID = d;
+		in >> separator;
 		in >> pop;
-		storage[count].population = pop;
+		storage2000[count].population = pop;
+		in >> separator;
+		in >> xPop;
+		storage2000[count].x = xPop;
+		in >> separator;
+		in >> yPop;
+		storage2000[count].y = yPop;
 
+		count++;
+	}
 
+	ifstream in2("Census_2010");
+	vector<CensusEntry> storage2010;
+	count = 0;
+
+	while(in.good())
+	{
+		in >> d;
+		in >> separator;
+		in >> d;
+		in >> separator;
+		in >> d;
+		in >> separator;
+		in >> d;
+		in >> separator; // Gets past the first four columns
+
+		CensusEntry* e = new CensusEntry();
+		storage2010.push_back(*e);
+
+		in >> d;
+		storage2010[count].blockID = d;
+		in >> separator;
+		in >> pop;
+		storage2010[count].population = pop;
+		in >> separator;
+		in >> xPop;
+		storage2010[count].x = xPop;
+		in >> separator;
+		in >> yPop;
+		storage2010[count].y = yPop;
+
+		count++;
+	}
+
+	int pop2000[9];
+	int pop2010[9];
+
+	// Initialize each array to 0
+	for(int g = 0; g < 9; g++)
+	{
+		pop2000[g] = 0;
+		pop2010[g] = 0;
+	}
+
+	for(int p = 0; p < storage2000.size(); p++)
+	{
+		switch(storage2000[p].blockID)
+		{
+			case 0 : pop2000[0] += storage2000[0].population;
+				break;
 	}
 }
 
@@ -125,13 +184,29 @@ void HW04dwyermwApp::drawPoint(Node* r)
 	if(4 * (yPos * surfaceSize + xPos) > surfaceSize * surfaceSize * 4)
 		return ;
 
-	pixels[4 * (yPos * surfaceSize + xPos)] = c.r;
-	pixels[4 * (yPos * surfaceSize + xPos)] = c.g;
-	pixels[4 * (yPos * surfaceSize + xPos)] = c.b;
+	int index = 4 * (yPos * surfaceSize + xPos);
+
+	pixels[index] = c.r;
+	pixels[index + 1] = c.g;
+	pixels[index + 2] = c.b;
 
 	drawPoint(r->right);
 	
 	draw();
+}
+
+void HW04dwyermwApp::drawCensusPoint(double x, double y)
+{
+	Color8u c = Color8u(0, 255, 0);
+
+	int xConverted = floor(x * surfaceSize) + 10;
+	int yConverted = floor((1 - y) * surfaceSize * 0.8) + 50;
+
+	int index = 4 * (yConverted * surfaceSize + xConverted);
+
+	pixels[index] = c.r;
+	pixels[index + 1] = c.g;
+	pixels[index + 2] = c.b;
 }
 
 void HW04dwyermwApp::clearSurface()

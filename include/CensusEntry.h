@@ -8,5 +8,6 @@ public:
 	int population;
 	int x;
 	int y;
+	int blockID;
 };
 

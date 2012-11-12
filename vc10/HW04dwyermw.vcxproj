@@ -111,9 +111,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\..\Desktop\HW04StarterFiles\Starbucks.h" />
+    <ClInclude Include="..\include\CensusEntry.h" />
+    <ClInclude Include="..\include\dwyermwStarbucks.h" />
+    <ClInclude Include="..\include\Node.h" />
     <ClInclude Include="..\include\Resources.h" />
-    <ClInclude Include="CensusEntry.h" />
-    <ClInclude Include="dwyermwStarbucks.h" />
+    <ClInclude Include="..\include\Starbucks.h" />
     <ClInclude Include="Node.h" />
   </ItemGroup>
   <ItemGroup>
