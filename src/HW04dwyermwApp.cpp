@@ -33,6 +33,7 @@ class HW04dwyermwApp : public AppBasic {
   public:
 	void setup();
 	void mouseDown( MouseEvent event );	
+	void keyDown(KeyEvent event);
 	void update();
 	void draw();
 	void prepareSettings(Settings* settings);
@@ -41,15 +42,22 @@ class HW04dwyermwApp : public AppBasic {
 	void censusDataReader();
 	void drawCensusPoint(double x, double y, Color c);
 	void findCensusDifference();
+	void zoom();
+
+	int zoomFactor, xOffset, yOffset;
 
 private:
 	// A dwyermwStarbucks object, which allows for the data to be loaded,
 	// the structure to be built, and the nearest locaiton to be found.
 	dwyermwStarbucks* star;
 	Surface* mySurface_;
+	Surface* zoomSurface_;
 	uint8_t* pixels;
+	uint8_t* zoomPixels;
+	
 	vector<CensusEntry> storage2000;
 	vector<CensusEntry> storage2010;
+
 
 	//gl::Texture* picture_;
 
@@ -69,6 +77,11 @@ void HW04dwyermwApp::prepareSettings(Settings* settings)
 void HW04dwyermwApp::setup()
 {
 	star = new dwyermwStarbucks();
+	zoomSurface_ = new Surface(surfaceSize, surfaceSize, true);
+	zoomPixels = (*zoomSurface_).getData();
+	zoomFactor = 1;
+	xOffset = 0;
+	yOffset = 0;
 	
 	mySurface_ = new Surface(surfaceSize, surfaceSize, true);
 	pixels = (*mySurface_).getData();
@@ -82,8 +95,14 @@ void HW04dwyermwApp::censusDataReader()
 	// Read in Census 2000 data
 	ifstream in("Census_2000.csv");
 
-	int blocks2000[9];
-	int blocks2010[9];
+	int blocks2000[10];
+	int blocks2010[10];
+
+	for(int r = 0; r <= 9; r++)
+	{
+		blocks2000[r] = 0;
+		blocks2010[r] = 0;
+	}
 
 	char separator;
 	int d;
@@ -166,11 +185,11 @@ void HW04dwyermwApp::censusDataReader()
 		Color* c = new Color(0, 0, 0);
 		c->g = 127;
 		if(difference >= 0)
-			c->g += (127 * (difference / 100000)) / 4;
+			c->g += (127 * (difference / 1000000)) / 4;
 		else
-			c->g += (127 * (difference/ -100000)) / 4;
+			c->g += (127 * (difference/ -1000000)) / 4;
 
-		drawCensusPoint(e->x, e->y, *c);
+		drawCensusPoint(ce->x, ce->y, *c);
 	}
 	
 	// Draw all census points from 2010 on map
@@ -182,10 +201,10 @@ void HW04dwyermwApp::censusDataReader()
 		Color* c = new Color(0, 0, 0);
 		c->g = 127;
 		if(difference >= 0)
-			c->g += (127 * (difference / 100000)) / 4;
+			c->g += (127 * (difference / 1000000)) / 4;
 		else
-			c->g += (127 * (difference/ -100000)) / 4;
-		drawCensusPoint(e->x, e->y, *c);
+			c->g += (127 * (difference/ -1000000)) / 4;
+		drawCensusPoint(ce->x, ce->y, *c);
 	}
 	
 
@@ -291,7 +310,7 @@ void HW04dwyermwApp::drawCensusPoint(double x, double y, Color c)
 	//Color8u c = Color8u(255, 0, 0);
 
 	int xConverted = floor(x * appWidth) + 10;
-	int yConverted = floor((1 - y) * appHeight * 0.8) + 35;
+	int yConverted = floor((1 - y) * appHeight * 0.8) + 50;
 
 	int index = 4 * (yConverted * surfaceSize + xConverted);
 
@@ -313,9 +332,25 @@ void HW04dwyermwApp::clearSurface()
 		}
 }
 
+void HW04dwyermwApp::zoom()
+{
+	for(int y = 0; y < surfaceSize; y++)
+	{
+		for(int x = 0; x < surfaceSize; x++)
+		{
+			int index = 4 * (y * surfaceSize + x);
+			int zoomIndex = 4* (((surfaceSize * (y/zoomFactor) + yOffset) + ((x/zoomFactor) + xOffset)));
+
+			zoomPixels[index] = pixels[zoomIndex];
+			zoomPixels[index + 1] = pixels[zoomIndex + 1];
+			zoomPixels[index + 2] = pixels[zoomIndex + 2];
+		}
+	}
+}
+
 void HW04dwyermwApp::mouseDown( MouseEvent event )
 {
-	Color8u c = Color8u(0, 255, 0);
+	Color8u c = Color8u(255, 0, 0);
 
 	int xPos = event.getX();
 	int yPos = event.getY();
@@ -340,9 +375,41 @@ void HW04dwyermwApp::mouseDown( MouseEvent event )
 	pixels[index + 2] = c.b; 
 }
 
+void HW04dwyermwApp::keyDown( KeyEvent event)
+{
+	if(event.getCode() == KeyEvent::KEY_KP_PLUS)
+		zoomFactor *= 2;
+	if(event.getCode() == KeyEvent::KEY_KP_MINUS)
+		if(zoomFactor != 1)
+				zoomFactor /= 2;
+
+	if(xOffset > surfaceSize - (surfaceSize/zoomFactor))
+		xOffset = surfaceSize - (surfaceSize/zoomFactor);
+
+	if(yOffset > surfaceSize - (surfaceSize/zoomFactor))
+		yOffset = surfaceSize - (surfaceSize/zoomFactor);
+
+	if(event.getCode() == KeyEvent::KEY_UP)
+		if(yOffset > 0)
+			yOffset -= 20;
+
+	if(event.getCode() == KeyEvent::KEY_DOWN)
+		if(yOffset < (surfaceSize - (surfaceSize/zoomFactor)))
+			yOffset += 20;
+
+	if(event.getCode() == KeyEvent::KEY_LEFT)
+		if(xOffset > 0)
+			xOffset -= 20;
+
+	if(event.getCode() == KeyEvent::KEY_RIGHT)
+		if(xOffset < (surfaceSize - (surfaceSize/zoomFactor)))
+			xOffset += 20;
+}
+
+
 void HW04dwyermwApp::update()
 {
-	
+	zoom();
 
 }
 
@@ -353,8 +420,8 @@ void HW04dwyermwApp::draw()
 	//gl::Texture picture( loadImage( loadResource( RES_IMG) ) );
 	//gl::draw(picture);
 	//gl::drawSolidRect(Rectf(100, 100, 120, 120), 0.2F);
-	
-	gl::draw(*mySurface_);
+	gl::draw(*zoomSurface_);
+	//gl::draw(*mySurface_);
 	//gl::clear(Color(0, 0, 0));
 }
 
