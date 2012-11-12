@@ -23,6 +23,7 @@
 #include "cinder/gl/Texture.h"
 #include "cinder\ImageIo.h"
 #include "Node.h"
+#include "CensusEntry.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -37,6 +38,7 @@ class HW04dwyermwApp : public AppBasic {
 	void prepareSettings(Settings* settings);
 	void drawPoint(Node* r);
 	void clearSurface();
+	void censusDataReader();
 
 private:
 	// A dwyermwStarbucks object, which allows for the data to be loaded,
@@ -71,6 +73,38 @@ void HW04dwyermwApp::setup()
 	
 	// Create loop in here that reads in all data from the tree, and puts it into a list of locations to
 	// draw on the picture.  Preferably a 2-d array.
+}
+
+void HW04dwyermwApp::censusDataReader()
+{
+	ifstream in("Census_2000.csv");
+
+	vector<CensusEntry> storage;
+	char seperator;
+	int d;
+	int pop = 0; // Population
+	int xPop = 0; // X coordinate of population
+	int yPop = 0; // Y coordinate of population
+	int count = 0;
+
+	while(in.good())
+	{
+		in >> d;
+		in >> seperator;
+		in >> d;
+		in >> seperator;
+		in >> d;
+		in >> seperator;
+		in >> d;
+		in >> seperator; // Gets past the first four columns
+
+		CensusEntry* e = new CensusEntry();
+		storage.push_back(*e);
+		in >> pop;
+		storage[count].population = pop;
+
+
+	}
 }
 
 void HW04dwyermwApp::drawPoint(Node* r)

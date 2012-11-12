@@ -105,12 +105,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\src\HW04dwyermwApp.cpp" />
+    <ClCompile Include="CensusEntry.cpp" />
     <ClCompile Include="dwyermwStarbucks.cpp" />
     <ClCompile Include="Node.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\..\Desktop\HW04StarterFiles\Starbucks.h" />
     <ClInclude Include="..\include\Resources.h" />
+    <ClInclude Include="CensusEntry.h" />
     <ClInclude Include="dwyermwStarbucks.h" />
     <ClInclude Include="Node.h" />
   </ItemGroup>
