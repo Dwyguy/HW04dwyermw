@@ -37,11 +37,28 @@ class HW04dwyermwApp : public AppBasic {
 	void update();
 	void draw();
 	void prepareSettings(Settings* settings);
+
+	// Takes in the root node of the tree and traverses the tree to
+	// draw each Starbucks location in blue
 	void drawPoint(Node* r);
+
+	// Clears the surface to make it black
 	void clearSurface();
+
+	// Reads in the census data from the .csv files, compares BlockIDs for
+	// regions, and organizes the data to be output on the screen.  If there
+	// was major decline in population from 2000 to 2010, the pixel appears red.
+	// If there was a major increase, the pixel is green.  There are in-between
+	// values as well for slight growth or decline.
 	void censusDataReader();
+
+	// Draws a census point on the screen a varying shade of green or red
+	// depending on the census data.
 	void drawCensusPoint(double x, double y, Color c);
-	void findCensusDifference();
+	
+	// Handles zoom functionality, redrawing the surfaces, and panning.
+	// NOTE: If the user is zoomed at all, clicking to find the nearest
+	// Starbucks will not work correctly.
 	void zoom();
 
 	int zoomFactor, xOffset, yOffset;
@@ -51,18 +68,17 @@ private:
 	// the structure to be built, and the nearest locaiton to be found.
 	dwyermwStarbucks* star;
 	Surface* mySurface_;
-	Surface* zoomSurface_;
+	Surface* zoomSurface_; // Surface for zooming
 	uint8_t* pixels;
 	uint8_t* zoomPixels;
 	
+	// Vector storage for the census data
 	vector<CensusEntry> storage2000;
 	vector<CensusEntry> storage2010;
 
 	static const int appHeight = 640;
 	static const int appWidth = 1024;
 	static const int surfaceSize = 1024;
-
-	
 };
 
 void HW04dwyermwApp::prepareSettings(Settings* settings)
@@ -132,7 +148,7 @@ void HW04dwyermwApp::censusDataReader()
 		in >> yPop;
 		storage2000[count].y = yPop;
 
-		blocks2000[d] += pop;
+		blocks2000[d] += pop; // Get blockID population
 
 		count++;
 	}
@@ -167,7 +183,7 @@ void HW04dwyermwApp::censusDataReader()
 		storage2010[count].y = yPop;
 
 		if(storage2010[count].blockID != 0)
-			blocks2010[d] += pop;
+			blocks2010[d] += pop; // Get block ID population
 
 		count++;
 	}
@@ -210,8 +226,6 @@ void HW04dwyermwApp::censusDataReader()
 		drawCensusPoint(ce->x, ce->y, *c);
 	}
 	
-
-
 }
 
 void HW04dwyermwApp::drawPoint(Node* r)
@@ -245,8 +259,6 @@ void HW04dwyermwApp::drawPoint(Node* r)
 
 void HW04dwyermwApp::drawCensusPoint(double x, double y, Color c)
 {
-	//Color8u c = Color8u(255, 0, 0);
-
 	int xConverted = floor(x * appWidth) + 10;
 	int yConverted = floor((1 - y) * appHeight * 0.8) + 50;
 
@@ -277,7 +289,7 @@ void HW04dwyermwApp::zoom()
 		for(int x = 0; x < surfaceSize; x++)
 		{
 			int index = 4 * (y * surfaceSize + x);
-			int zoomIndex = 4* (((surfaceSize * (y/zoomFactor) + yOffset) + ((x/zoomFactor) + xOffset)));
+			int zoomIndex = 4* (((surfaceSize * ((y/zoomFactor) + yOffset)) + ((x/zoomFactor) + xOffset)));
 
 			zoomPixels[index] = pixels[zoomIndex];
 			zoomPixels[index + 1] = pixels[zoomIndex + 1];
@@ -297,6 +309,9 @@ void HW04dwyermwApp::mouseDown( MouseEvent event )
 	double xConverted = (((double)xPos) - 10) / appWidth;
 	double yConverted = 1 - ((((double)yPos) - 50) / (appHeight * 0.8));
 
+	// Orginally I had a white dot where the user clicked, but I thought this
+	// was a bit confusing.  I took it out rather than make it a different color
+	// because it was less for the user to keep track of.
 	/*
 	int index = 4 * (yPos * surfaceSize + xPos);
 	pixels[index] = c.r;
@@ -310,7 +325,8 @@ void HW04dwyermwApp::mouseDown( MouseEvent event )
 	xPos = floor(appWidth * nearest->x) + 10;
 	yPos = (floor(appHeight * (1 - nearest->y) * 0.8) + 50);
 
-	// Nearest Starbucks is a white pixel.  Sorry I couldn't get it bigger
+	// Nearest Starbucks is a white pixel.  Sorry I couldn't get it bigger.
+	// I tried a few things with openGL, but none of it was really working out.
 	int index = 4 * (yPos * surfaceSize + xPos);
 	pixels[index] = c.r;
 	pixels[index + 1] = c.g;
@@ -354,19 +370,11 @@ void HW04dwyermwApp::keyDown( KeyEvent event)
 void HW04dwyermwApp::update()
 {
 	zoom();
-
 }
 
 void HW04dwyermwApp::draw()
 {
-	
-	//gl::draw(*myTexture_);
-	//gl::Texture picture( loadImage( loadResource( RES_IMG) ) );
-	//gl::draw(picture);
-	//gl::drawSolidRect(Rectf(100, 100, 120, 120), 0.2F);
 	gl::draw(*zoomSurface_);
-	//gl::draw(*mySurface_);
-	//gl::clear(Color(0, 0, 0));
 }
 
 CINDER_APP_BASIC( HW04dwyermwApp, RendererGl )
