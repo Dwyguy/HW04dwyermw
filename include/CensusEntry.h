@@ -6,8 +6,8 @@ public:
 	~CensusEntry(void);
 
 	int population;
-	int x;
-	int y;
+	double x;
+	double y;
 	int blockID;
 };
 

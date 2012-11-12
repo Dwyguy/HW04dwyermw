@@ -39,7 +39,7 @@ class HW04dwyermwApp : public AppBasic {
 	void drawPoint(Node* r);
 	void clearSurface();
 	void censusDataReader();
-	void drawCensusPoint(double x, double y);
+	void drawCensusPoint(double x, double y, Color c);
 	void findCensusDifference();
 
 private:
@@ -82,6 +82,9 @@ void HW04dwyermwApp::censusDataReader()
 	// Read in Census 2000 data
 	ifstream in("Census_2000.csv");
 
+	int blocks2000[9];
+	int blocks2010[9];
+
 	char separator;
 	int d;
 	int pop = 0; // Population
@@ -113,6 +116,8 @@ void HW04dwyermwApp::censusDataReader()
 		in >> yPop;
 		storage2000[count].y = yPop;
 
+		blocks2000[d] += pop;
+
 		count++;
 	}
 	in.close();
@@ -120,7 +125,7 @@ void HW04dwyermwApp::censusDataReader()
 	ifstream in2("Census_2010.csv");
 	count = 0;
 
-	/*while(in2.good())
+	while(in2.good())
 	{
 		in2 >> d;
 		in2 >> separator;
@@ -145,26 +150,44 @@ void HW04dwyermwApp::censusDataReader()
 		in2 >> yPop;
 		storage2010[count].y = yPop;
 
+		if(storage2010[count].blockID != 0)
+			blocks2010[d] += pop;
+
 		count++;
 	}
-	in2.close();*/
+	in2.close();
 
 	// Draw all census points from 2000 on map
 	for(int j = 0; j < storage2000.size(); j++)
 	{
 		CensusEntry* ce = &storage2000[j];
 		Entry* e = star->getNearest(ce->x, ce->y);
-		drawCensusPoint(e->x, e->y);
+		int difference = blocks2010[ce->blockID] - blocks2000[ce->blockID];
+		Color* c = new Color(0, 0, 0);
+		c->g = 127;
+		if(difference >= 0)
+			c->g += (127 * (difference / 100000)) / 4;
+		else
+			c->g += (127 * (difference/ -100000)) / 4;
+
+		drawCensusPoint(e->x, e->y, *c);
 	}
 	
 	// Draw all census points from 2010 on map
-	/*for(int k = 0; k < storage2010.size(); k++)
+	for(int k = 0; k < storage2010.size(); k++)
 	{
 		CensusEntry* ce = &storage2010[k];
 		Entry* e = star->getNearest(ce->x, ce->y);
-		drawCensusPoint(e->x, e->y);
+		int difference = blocks2010[ce->blockID] - blocks2000[ce->blockID];
+		Color* c = new Color(0, 0, 0);
+		c->g = 127;
+		if(difference >= 0)
+			c->g += (127 * (difference / 100000)) / 4;
+		else
+			c->g += (127 * (difference/ -100000)) / 4;
+		drawCensusPoint(e->x, e->y, *c);
 	}
-	*/
+	
 
 
 }
@@ -263,12 +286,12 @@ void HW04dwyermwApp::drawPoint(Node* r)
 	draw();
 }
 
-void HW04dwyermwApp::drawCensusPoint(double x, double y)
+void HW04dwyermwApp::drawCensusPoint(double x, double y, Color c)
 {
-	Color8u c = Color8u(255, 0, 0);
+	//Color8u c = Color8u(255, 0, 0);
 
-	int xConverted = floor(x * surfaceSize) + 10;
-	int yConverted = floor((1 - y) * surfaceSize * 0.8);
+	int xConverted = floor(x * appWidth) + 10;
+	int yConverted = floor((1 - y) * appHeight * 0.8) + 35;
 
 	int index = 4 * (yConverted * surfaceSize + xConverted);
 
