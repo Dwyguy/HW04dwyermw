@@ -36,6 +36,7 @@ class HW04dwyermwApp : public AppBasic {
 	void draw();
 	void prepareSettings(Settings* settings);
 	void drawPoint(Node* r);
+	void clearSurface();
 
 private:
 	// A dwyermwStarbucks object, which allows for the data to be loaded,
@@ -46,8 +47,8 @@ private:
 
 	//gl::Texture* picture_;
 
-	static const int appHeight = 600;
-	static const int appWidth = 800;
+	static const int appHeight = 640;
+	static const int appWidth = 1024;
 	static const int surfaceSize = 1024;
 
 	
@@ -65,7 +66,7 @@ void HW04dwyermwApp::setup()
 	
 	mySurface_ = new Surface(surfaceSize, surfaceSize, true);
 	pixels = (*mySurface_).getData();
-
+	clearSurface();
 	drawPoint(star->root);
 	
 	// Create loop in here that reads in all data from the tree, and puts it into a list of locations to
@@ -74,6 +75,7 @@ void HW04dwyermwApp::setup()
 
 void HW04dwyermwApp::drawPoint(Node* r)
 {
+	
 	Color8u c = Color8u(0, 0, 255);
 
 	if(r == NULL)
@@ -81,20 +83,61 @@ void HW04dwyermwApp::drawPoint(Node* r)
 
 	drawPoint(r->left);
 
-	int xPos = r->key->x * appWidth;
-	int yPos = r->key->y * appHeight;
+	int xPos = floor(r->key->x * appWidth) + 10;
+	int yPos = floor((1 - r->key->y) * appHeight * 0.8) + 50;
+
+	if(4 * (yPos * surfaceSize + xPos) < 0)
+		return;
+	if(4 * (yPos * surfaceSize + xPos) > surfaceSize * surfaceSize * 4)
+		return ;
 
 	pixels[4 * (yPos * surfaceSize + xPos)] = c.r;
 	pixels[4 * (yPos * surfaceSize + xPos)] = c.g;
 	pixels[4 * (yPos * surfaceSize + xPos)] = c.b;
 
 	drawPoint(r->right);
-
+	
 	draw();
+}
+
+void HW04dwyermwApp::clearSurface()
+{
+	Color8u c = Color8u(0, 0, 0);
+	for(int x = 0; x < surfaceSize; x++)
+		for(int y = 0; y < surfaceSize; y++)
+		{
+			int index = 4 * (y * surfaceSize + x);
+			pixels[index] = c.r;
+			pixels[index + 1] = c.g;
+			pixels[index + 2] = c.b;
+		}
 }
 
 void HW04dwyermwApp::mouseDown( MouseEvent event )
 {
+	Color8u c = Color8u(0, 255, 0);
+
+	int xPos = event.getX();
+	int yPos = event.getY();
+
+	// Convert to the 0 to 1 scale
+	double xConverted = (((double)xPos) - 10) / appWidth;
+	double yConverted = 1 - ((((double)yPos) - 50) / (appHeight * 0.8));
+
+	int index = 4 * (yPos * surfaceSize + xPos);
+	pixels[index] = c.r;
+	pixels[index + 1] = c.g;
+	pixels[index + 2] = c.b;
+
+	Entry* nearest = star->getNearest(xConverted, yConverted);
+	// Go from converted scale to pixels
+	xPos = floor(appWidth * nearest->x) + 10;
+	yPos = (floor(appHeight * (1 - nearest->y) * 0.8) + 50);
+
+	index = 4 * (yPos * surfaceSize + xPos);
+	pixels[index] = c.r;
+	pixels[index + 1] = c.g;
+	pixels[index + 2] = c.b; 
 }
 
 void HW04dwyermwApp::update()
@@ -107,11 +150,12 @@ void HW04dwyermwApp::draw()
 {
 	
 	//gl::draw(*myTexture_);
-	gl::Texture picture( loadImage( loadResource( RES_IMG) ) );
-	gl::draw(picture);
-	gl::drawSolidRect(Rectf(100, 100, 120, 120), 0.2F);
-	gl::draw(*mySurface_);
+	//gl::Texture picture( loadImage( loadResource( RES_IMG) ) );
+	//gl::draw(picture);
+	//gl::drawSolidRect(Rectf(100, 100, 120, 120), 0.2F);
 	
+	gl::draw(*mySurface_);
+	//gl::clear(Color(0, 0, 0));
 }
 
 CINDER_APP_BASIC( HW04dwyermwApp, RendererGl )
