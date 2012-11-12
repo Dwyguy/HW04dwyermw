@@ -58,9 +58,6 @@ private:
 	vector<CensusEntry> storage2000;
 	vector<CensusEntry> storage2010;
 
-
-	//gl::Texture* picture_;
-
 	static const int appHeight = 640;
 	static const int appWidth = 1024;
 	static const int surfaceSize = 1024;
@@ -201,79 +198,20 @@ void HW04dwyermwApp::censusDataReader()
 		Color* c = new Color(0, 0, 0);
 		c->g = 127;
 		if(difference >= 0)
+		{
 			c->g += (127 * (difference / 1000000)) / 4;
+			c->r -= (127 * (difference / 1000000)) / 4;
+		}
 		else
-			c->g += (127 * (difference/ -1000000)) / 4;
+		{
+			c->g -= (127 * (difference/ -1000000)) / 4;
+			c->r += (127 * (difference / 1000000)) / 4;
+		}
 		drawCensusPoint(ce->x, ce->y, *c);
 	}
 	
 
 
-}
-
-void HW04dwyermwApp::findCensusDifference()
-{
-	int pop2000[9];
-	int pop2010[9];
-
-	// Initialize each array to 0
-	for(int g = 0; g < 9; g++)
-	{
-		pop2000[g] = 0;
-		pop2010[g] = 0;
-	}
-
-	// Sort all population values from the 2000 census based on BlockID
-	for(int p = 0; p < storage2000.size(); p++)
-	{
-		switch(storage2000[p].blockID)
-		{
-			case 1 : pop2000[1] += storage2000[1].population;
-				break;
-			case 2 : pop2000[2] += storage2000[2].population;
-				break;
-			case 3 : pop2000[3] += storage2000[3].population;
-				break;
-			case 4 : pop2000[4] += storage2000[4].population;
-				break;
-			case 5 : pop2000[5] += storage2000[5].population;
-				break;
-			case 6 : pop2000[6] += storage2000[6].population;
-				break;
-			case 7 : pop2000[7] += storage2000[7].population;
-				break;
-			case 8 : pop2000[8] += storage2000[8].population;
-				break;
-			case 9 : pop2000[9] += storage2000[9].population;
-				break;
-		}
-	}
-
-	// Sort all population values from the 2010 census based on BlockID
-	for(int p = 0; p < storage2010.size(); p++)
-	{
-		switch(storage2010[p].blockID)
-		{
-			case 1 : pop2010[1] += storage2010[1].population;
-				break;
-			case 2 : pop2010[2] += storage2010[2].population;
-				break;
-			case 3 : pop2010[3] += storage2010[3].population;
-				break;
-			case 4 : pop2010[4] += storage2010[4].population;
-				break;
-			case 5 : pop2010[5] += storage2010[5].population;
-				break;
-			case 6 : pop2010[6] += storage2010[6].population;
-				break;
-			case 7 : pop2010[7] += storage2010[7].population;
-				break;
-			case 8 : pop2010[8] += storage2010[8].population;
-				break;
-			case 9 : pop2010[9] += storage2010[9].population;
-				break;
-		}
-	}
 }
 
 void HW04dwyermwApp::drawPoint(Node* r)
@@ -350,7 +288,7 @@ void HW04dwyermwApp::zoom()
 
 void HW04dwyermwApp::mouseDown( MouseEvent event )
 {
-	Color8u c = Color8u(255, 0, 0);
+	Color8u c = Color8u(255, 255, 255);
 
 	int xPos = event.getX();
 	int yPos = event.getY();
@@ -359,17 +297,21 @@ void HW04dwyermwApp::mouseDown( MouseEvent event )
 	double xConverted = (((double)xPos) - 10) / appWidth;
 	double yConverted = 1 - ((((double)yPos) - 50) / (appHeight * 0.8));
 
+	/*
 	int index = 4 * (yPos * surfaceSize + xPos);
 	pixels[index] = c.r;
 	pixels[index + 1] = c.g;
 	pixels[index + 2] = c.b;
+	*/
+	//gl::drawSolidCircle(Vec2f(xPos, yPos), 5);
 
 	Entry* nearest = star->getNearest(xConverted, yConverted);
 	// Go from converted scale to pixels
 	xPos = floor(appWidth * nearest->x) + 10;
 	yPos = (floor(appHeight * (1 - nearest->y) * 0.8) + 50);
 
-	index = 4 * (yPos * surfaceSize + xPos);
+	// Nearest Starbucks is a white pixel.  Sorry I couldn't get it bigger
+	int index = 4 * (yPos * surfaceSize + xPos);
 	pixels[index] = c.r;
 	pixels[index + 1] = c.g;
 	pixels[index + 2] = c.b; 
@@ -380,14 +322,16 @@ void HW04dwyermwApp::keyDown( KeyEvent event)
 	if(event.getCode() == KeyEvent::KEY_KP_PLUS)
 		zoomFactor *= 2;
 	if(event.getCode() == KeyEvent::KEY_KP_MINUS)
+	{
 		if(zoomFactor != 1)
-				zoomFactor /= 2;
-
-	if(xOffset > surfaceSize - (surfaceSize/zoomFactor))
-		xOffset = surfaceSize - (surfaceSize/zoomFactor);
-
-	if(yOffset > surfaceSize - (surfaceSize/zoomFactor))
-		yOffset = surfaceSize - (surfaceSize/zoomFactor);
+		{
+			zoomFactor /= 2;
+			if(xOffset > surfaceSize - (surfaceSize/zoomFactor))
+				xOffset = surfaceSize - (surfaceSize/zoomFactor);
+			if(yOffset > surfaceSize - (surfaceSize/zoomFactor))
+				yOffset = surfaceSize - (surfaceSize/zoomFactor);
+		}
+	}
 
 	if(event.getCode() == KeyEvent::KEY_UP)
 		if(yOffset > 0)
