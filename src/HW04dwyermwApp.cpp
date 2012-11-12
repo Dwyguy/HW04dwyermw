@@ -22,7 +22,7 @@
 #include "Resources.h"
 #include "cinder/gl/Texture.h"
 #include "cinder\ImageIo.h"
-
+#include "Node.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -35,19 +35,22 @@ class HW04dwyermwApp : public AppBasic {
 	void update();
 	void draw();
 	void prepareSettings(Settings* settings);
-	gl::Texture* myTexture_;
+	void drawPoint(Node* r);
 
 private:
 	// A dwyermwStarbucks object, which allows for the data to be loaded,
 	// the structure to be built, and the nearest locaiton to be found.
 	dwyermwStarbucks* star;
 	Surface* mySurface_;
-	
-	gl::Texture* picture_;
+	uint8_t* pixels;
+
+	//gl::Texture* picture_;
 
 	static const int appHeight = 600;
 	static const int appWidth = 800;
 	static const int surfaceSize = 1024;
+
+	
 };
 
 void HW04dwyermwApp::prepareSettings(Settings* settings)
@@ -58,32 +61,36 @@ void HW04dwyermwApp::prepareSettings(Settings* settings)
 
 void HW04dwyermwApp::setup()
 {
-	mySurface_ = new Surface(surfaceSize, surfaceSize, false);
 	star = new dwyermwStarbucks();
-	Entry* e = star->getNearest(0.0, 0.0);
-	console() << "Identifier = " << e->identifier << ", X = " << e->x << ", Y = " << e->y;
-	Entry* e1 = star->getNearest(0.1, 0.1);
-	console() << "Identifier = " << e1->identifier << ", X = " << e1->x << ", Y = " << e1->y;
-	Entry* e2 = star->getNearest(0.2, 0.2);
-	console() << "Identifier = " << e2->identifier << ", X = " << e2->x << ", Y = " << e2->y;
-	Entry* e3 = star->getNearest(0.3, 0.3);
-	console() << "Identifier = " << e3->identifier << ", X = " << e3->x << ", Y = " << e3->y;
-	Entry* e4 = star->getNearest(0.4, 0.4);
-	console() << "Identifier = " << e4->identifier << ", X = " << e4->x << ", Y = " << e4->y;
-	Entry* e5 = star->getNearest(0.5, 0.5);
-	console() << "Identifier = " << e5->identifier << ", X = " << e5->x << ", Y = " << e5->y;
-	Entry* e6 = star->getNearest(0.6, 0.6);
-	console() << "Identifier = " << e6->identifier << ", X = " << e6->x << ", Y = " << e6->y;
-	Entry* e7 = star->getNearest(0.7, 0.7);
-	console() << "Identifier = " << e7->identifier << ", X = " << e7->x << ", Y = " << e7->y;
-	Entry* e8 = star->getNearest(0.8, 0.8);
-	console() << "Identifier = " << e8->identifier << ", X = " << e8->x << ", Y = " << e8->y;
-	Entry* e9 = star->getNearest(0.9, 0.9);
-	console() << "Identifier = " << e9->identifier << ", X = " << e9->x << ", Y = " << e9->y;
-	Entry* e10 = star->getNearest(1.0, 1.0);
-	console() << "Identifier = " << e10->identifier << ", X = " << e10->x << ", Y = " << e10->y;
-	//system("PAUSE");
-	//cout << cin << endl;
+	
+	mySurface_ = new Surface(surfaceSize, surfaceSize, true);
+	pixels = (*mySurface_).getData();
+
+	drawPoint(star->root);
+	
+	// Create loop in here that reads in all data from the tree, and puts it into a list of locations to
+	// draw on the picture.  Preferably a 2-d array.
+}
+
+void HW04dwyermwApp::drawPoint(Node* r)
+{
+	Color8u c = Color8u(0, 0, 255);
+
+	if(r == NULL)
+		return;
+
+	drawPoint(r->left);
+
+	int xPos = r->key->x * appWidth;
+	int yPos = r->key->y * appHeight;
+
+	pixels[4 * (yPos * surfaceSize + xPos)] = c.r;
+	pixels[4 * (yPos * surfaceSize + xPos)] = c.g;
+	pixels[4 * (yPos * surfaceSize + xPos)] = c.b;
+
+	drawPoint(r->right);
+
+	draw();
 }
 
 void HW04dwyermwApp::mouseDown( MouseEvent event )
@@ -92,15 +99,19 @@ void HW04dwyermwApp::mouseDown( MouseEvent event )
 
 void HW04dwyermwApp::update()
 {
-	//(*myTexture_).update(*mySurface_,(*mySurface_).getBounds());
+	
+
 }
 
 void HW04dwyermwApp::draw()
 {
-	//gl::draw(*mySurface_);
+	
 	//gl::draw(*myTexture_);
 	gl::Texture picture( loadImage( loadResource( RES_IMG) ) );
 	gl::draw(picture);
+	gl::drawSolidRect(Rectf(100, 100, 120, 120), 0.2F);
+	gl::draw(*mySurface_);
+	
 }
 
 CINDER_APP_BASIC( HW04dwyermwApp, RendererGl )

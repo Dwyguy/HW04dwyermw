@@ -32,5 +32,12 @@ public:
 	// The root node to the binary tree structure
 	Node* root;
 	
+	//
+	Entry* locs;
+	int locsLen;
+
+	int getlocsLen();
+
+
 };
 

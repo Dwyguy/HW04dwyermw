@@ -13,6 +13,7 @@ dwyermwStarbucks::dwyermwStarbucks()
 {
 	ifstream in("Starbucks_2006.csv");
 	vector <Entry> storage;
+	locsLen = 0;
 	
 	string line;
 	double d;
@@ -37,7 +38,8 @@ dwyermwStarbucks::dwyermwStarbucks()
 		console() << line;
 	}
 
-	Entry* locs = new Entry[storage.size()];
+	//locsLen = storage.size();
+	locs = new Entry[storage.size()];
 	
 	// Copies all values from the vector to the array
 	for(int y = 0; y < storage.size(); y++)
@@ -45,6 +47,8 @@ dwyermwStarbucks::dwyermwStarbucks()
 
 	// Builds the binary tree
 	build(locs, storage.size());
+
+
 }
 
 
@@ -97,6 +101,7 @@ void dwyermwStarbucks::build(Entry* c, int n)
 			r->insert(&locs[p], r, true);
 	}
 
+	locsLen = storage.size();
 }
 
 Entry* dwyermwStarbucks::getNearest(double x, double y)
@@ -134,4 +139,9 @@ Entry* dwyermwStarbucks::getNearest(double x, double y)
 		return e_prev;
 	else
 		return e_next;
+}
+
+int dwyermwStarbucks::getlocsLen()
+{
+	return locsLen;
 }
