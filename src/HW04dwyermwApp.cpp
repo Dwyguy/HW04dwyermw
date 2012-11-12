@@ -40,6 +40,7 @@ class HW04dwyermwApp : public AppBasic {
 	void clearSurface();
 	void censusDataReader();
 	void drawCensusPoint(double x, double y);
+	void findCensusDifference();
 
 private:
 	// A dwyermwStarbucks object, which allows for the data to be loaded,
@@ -48,7 +49,7 @@ private:
 	Surface* mySurface_;
 	uint8_t* pixels;
 	vector<CensusEntry> storage2000;
-	vector<CensusEntry> stroage 2010;
+	vector<CensusEntry> storage2010;
 
 	//gl::Texture* picture_;
 
@@ -72,6 +73,7 @@ void HW04dwyermwApp::setup()
 	mySurface_ = new Surface(surfaceSize, surfaceSize, true);
 	pixels = (*mySurface_).getData();
 	clearSurface();
+	censusDataReader();
 	drawPoint(star->root);
 }
 
@@ -83,8 +85,8 @@ void HW04dwyermwApp::censusDataReader()
 	char separator;
 	int d;
 	int pop = 0; // Population
-	int xPop = 0; // X coordinate of population
-	int yPop = 0; // Y coordinate of population
+	double xPop = 0; // X coordinate of population
+	double yPop = 0; // Y coordinate of population
 	int count = 0;
 
 	while(in.good())
@@ -113,40 +115,62 @@ void HW04dwyermwApp::censusDataReader()
 
 		count++;
 	}
+	in.close();
 
-	ifstream in2("Census_2010");
-	vector<CensusEntry> storage2010;
+	ifstream in2("Census_2010.csv");
 	count = 0;
 
-	while(in.good())
+	/*while(in2.good())
 	{
-		in >> d;
-		in >> separator;
-		in >> d;
-		in >> separator;
-		in >> d;
-		in >> separator;
-		in >> d;
-		in >> separator; // Gets past the first four columns
+		in2 >> d;
+		in2 >> separator;
+		in2 >> d;
+		in2 >> separator;
+		in2 >> d;
+		in2 >> separator;
+		
 
 		CensusEntry* e = new CensusEntry();
 		storage2010.push_back(*e);
 
-		in >> d;
+		in2 >> d;
 		storage2010[count].blockID = d;
-		in >> separator;
-		in >> pop;
+		in2 >> separator;
+		in2 >> pop;
 		storage2010[count].population = pop;
-		in >> separator;
-		in >> xPop;
+		in2 >> separator;
+		in2 >> xPop;
 		storage2010[count].x = xPop;
-		in >> separator;
-		in >> yPop;
+		in2 >> separator;
+		in2 >> yPop;
 		storage2010[count].y = yPop;
 
 		count++;
 	}
+	in2.close();*/
 
+	// Draw all census points from 2000 on map
+	for(int j = 0; j < storage2000.size(); j++)
+	{
+		CensusEntry* ce = &storage2000[j];
+		Entry* e = star->getNearest(ce->x, ce->y);
+		drawCensusPoint(e->x, e->y);
+	}
+	
+	// Draw all census points from 2010 on map
+	/*for(int k = 0; k < storage2010.size(); k++)
+	{
+		CensusEntry* ce = &storage2010[k];
+		Entry* e = star->getNearest(ce->x, ce->y);
+		drawCensusPoint(e->x, e->y);
+	}
+	*/
+
+
+}
+
+void HW04dwyermwApp::findCensusDifference()
+{
 	int pop2000[9];
 	int pop2010[9];
 
@@ -157,12 +181,56 @@ void HW04dwyermwApp::censusDataReader()
 		pop2010[g] = 0;
 	}
 
+	// Sort all population values from the 2000 census based on BlockID
 	for(int p = 0; p < storage2000.size(); p++)
 	{
 		switch(storage2000[p].blockID)
 		{
-			case 0 : pop2000[0] += storage2000[0].population;
+			case 1 : pop2000[1] += storage2000[1].population;
 				break;
+			case 2 : pop2000[2] += storage2000[2].population;
+				break;
+			case 3 : pop2000[3] += storage2000[3].population;
+				break;
+			case 4 : pop2000[4] += storage2000[4].population;
+				break;
+			case 5 : pop2000[5] += storage2000[5].population;
+				break;
+			case 6 : pop2000[6] += storage2000[6].population;
+				break;
+			case 7 : pop2000[7] += storage2000[7].population;
+				break;
+			case 8 : pop2000[8] += storage2000[8].population;
+				break;
+			case 9 : pop2000[9] += storage2000[9].population;
+				break;
+		}
+	}
+
+	// Sort all population values from the 2010 census based on BlockID
+	for(int p = 0; p < storage2010.size(); p++)
+	{
+		switch(storage2010[p].blockID)
+		{
+			case 1 : pop2010[1] += storage2010[1].population;
+				break;
+			case 2 : pop2010[2] += storage2010[2].population;
+				break;
+			case 3 : pop2010[3] += storage2010[3].population;
+				break;
+			case 4 : pop2010[4] += storage2010[4].population;
+				break;
+			case 5 : pop2010[5] += storage2010[5].population;
+				break;
+			case 6 : pop2010[6] += storage2010[6].population;
+				break;
+			case 7 : pop2010[7] += storage2010[7].population;
+				break;
+			case 8 : pop2010[8] += storage2010[8].population;
+				break;
+			case 9 : pop2010[9] += storage2010[9].population;
+				break;
+		}
 	}
 }
 
@@ -197,10 +265,10 @@ void HW04dwyermwApp::drawPoint(Node* r)
 
 void HW04dwyermwApp::drawCensusPoint(double x, double y)
 {
-	Color8u c = Color8u(0, 255, 0);
+	Color8u c = Color8u(255, 0, 0);
 
 	int xConverted = floor(x * surfaceSize) + 10;
-	int yConverted = floor((1 - y) * surfaceSize * 0.8) + 50;
+	int yConverted = floor((1 - y) * surfaceSize * 0.8);
 
 	int index = 4 * (yConverted * surfaceSize + xConverted);
 
