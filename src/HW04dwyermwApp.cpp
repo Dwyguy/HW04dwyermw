@@ -11,6 +11,10 @@
 * which means you are free to use, share, and remix it as long as you
 * give attribution. Commercial uses are allowed.
 *
+* @note The code for zooming was explained and showed to me by fellow
+* classmate Cary Willard.  Much of my code for zooming is mainly from
+* his Starbucks project (https://github.com/CaryWillard/HW04-willartc-2)
+*
 */
 
 #include "cinder/app/AppBasic.h"
